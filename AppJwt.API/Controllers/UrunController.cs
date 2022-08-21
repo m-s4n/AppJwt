@@ -13,16 +13,19 @@ namespace AppJwt.API.Controllers
     public class UrunController : ControllerBase
     {
         private readonly IService<Urun, UrunDto> _urunService;
+        private readonly ILogger _logger;
 
-        public UrunController(IService<Urun, UrunDto> urunService)
+        public UrunController(IService<Urun, UrunDto> urunService, ILoggerFactory loggerFactory)
         {
             _urunService = urunService;
+            _logger = loggerFactory.CreateLogger("Urunler");
         }
 
 
         [HttpGet]
         public async Task<IActionResult> GetUrunler()
         {
+
             var result = await _urunService.GetAllAsync();
             return new ObjectResult(result)
             {
@@ -34,6 +37,7 @@ namespace AppJwt.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUrun(UrunDto urunDto)
         {
+            _logger.LogCritical("Critical Logging");
             var result = await _urunService.AddAsync(urunDto);
             return new ObjectResult(result)
             {

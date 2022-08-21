@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using SharedLibrary.Configurations;
 using SharedLibrary.Services;
 using SharedLibrary.Extensions;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +66,10 @@ builder.Services.UseCustomValidationResponse();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Logging
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -81,6 +86,9 @@ app.UseHttpsRedirection();
 // Sýralama önemli kimlik doðrulama ve yetki
 app.UseAuthentication();
 app.UseAuthorization();
+// needed for  ${aspnet-request-posted-body} with an API Controller.
+app.UseMiddleware<NLogRequestPostedBodyMiddleware>(
+    new NLogRequestPostedBodyMiddlewareOptions());
 
 app.MapControllers();
 
